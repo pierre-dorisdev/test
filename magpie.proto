@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package magpie;
+
+message LocationReport {
+    string imei = 1;
+    string iccid = 2;
+    int32 battery = 3;
+    double latitude = 4;
+    double longitude = 5;
+	double accuracy = 6;
+    string timestamp = 7;
+}
