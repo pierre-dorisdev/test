@@ -10,6 +10,8 @@ Build `go`: `make go`
 
 ###1. Magpie Main flow
 
+![Magpie Main flow](https://github.com/pierre-dorisdev/test/blob/master/Magpie%20Protocol%20Buffer%20Communication%20Flow.png)
+
 ###2. Power on
 
 ###3. Device register to 3G server
