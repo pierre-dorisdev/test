@@ -2,13 +2,66 @@ syntax = "proto3";
 
 package magpie;
 
-message LocationReport {
+message DeviceTelemetry {
     string imei = 1;
     string iccid = 2;
-    int32 battery = 3;
-    double latitude = 4;
-    double longitude = 5;
-	double accuracy = 6;
-    string timestamp = 7;
-	int32 nmc = 8;
+    string firmware_version = 3;
+    string hardware_version= 4;
+// removed timestamp here as when only cell tower data available, there is no timestamp, server time should be used, as there is no clock in the Magpei
+    int32 battery_level = 5; // battery level in 0-100% (in 5% step)
+    repeated Cell cells = 6;
+    repeated Location locations = 7;
+}
+
+message Cell {
+    int32 country_code = 1;
+    int32 operator_code = 2;
+    int32 lac = 3;    // Location area code
+    int32 cid = 4;    // Cell ID
+    int32 signal = 5; // Signal stength
+}
+
+message Location {
+    double latitude = 1;  // Format: (-)dd.ddddd
+    double longitude = 2; // Format: (-)ddd.ddddd
+    double altitude = 3;  // The altitude of the antenna away from the sea level: unit: m (Pierre: not sure if this is useful, but keep here first)
+    double hdop = 4;      // Horizontal precision: format: 0.5-99.9
+    double spkm = 5;      // Speed over ground: format: xxxx.x, unit: km/h
+    int32 nsat = 6;       // Number of satellites
+    double cog = 7;       // Ground heading: format: ddd.mm
+    string timestamp = 8; // // Suggest using UTC time YYMMDDHHMMSS as it is the raw data from UC20 module. This helps to reduce processing time instead of ISO 8061 20171103T172444Z
+}
+
+message DeivceConfig { // to be further discussed how to read and write
+    Mode mode = 1;
+    int32 sleep_time = 2;
+    int32 report_frequency = 3;
+    int32 gps_requency = 4;
+    int32 alert_setting = 5;
+    string server_address = 6;
+    int32 server_port = 7;
+}
+
+message Ack { // Acknowledgement of receiving message with response
+	Direction dir = 1;
+	Response response = 2;
+	
+}
+
+enum Mode {
+    UNKNOWN = 0;
+    NORMAL = 1;
+    SLEEP = 2;
+    SEMI_SLEEP = 3;
+}
+
+enum Direction {
+    SERVER_TO_MAGPIE = 0; 
+	MAGPIE_TO_SERVER = 1; 
+}
+
+enum Response{
+    SUCCESSFULL = 0; 
+    PENDING_COMMAND_FROM_SERVER = 1; // indicate there is queued command pending from server, Magpie should wait for (5 sec) to receive it
+	ERROR_DATA_CORRUPTED = 2; 
 }
